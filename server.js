@@ -6,40 +6,54 @@ const dotenv = require('dotenv');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 
-dotenv.config();
+dotenv.config(); // Load .env file
 const app = express();
 
 // ====== MongoDB Connection ======
+const NODE_ENV = process.env.NODE_ENV || 'development';
 const MONGO_URI = process.env.MONGO_URI;
+
+// Debug log to verify .env is loading
+console.log("🧩 MONGO_URI from .env:", MONGO_URI);
+
 if (!MONGO_URI) {
     console.error("❌ MONGO_URI not set in environment variables");
     process.exit(1);
 }
 
-mongoose.connect(MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log('✅ MongoDB connected'))
-.catch(err => {
-    console.error('❌ MongoDB connection error:', err);
-    process.exit(1);
-});
+// Use async function for better error handling
+async function connectDB() {
+    try {
+        await mongoose.connect(MONGO_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
+        console.log('✅ MongoDB connected');
+    } catch (err) {
+        console.error('❌ MongoDB connection error:', err.message);
+        process.exit(1);
+    }
+}
+connectDB();
 
 // ====== Middlewares ======
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ====== Session Setup ======
 app.use(session({
     secret: process.env.SESSION_SECRET || 'secret',
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: MONGO_URI }),
+    store: MongoStore.create({
+        mongoUrl: MONGO_URI,
+        collectionName: 'sessions',
+    }),
     cookie: { maxAge: 1000 * 60 * 60 * 24 } // 1 day
 }));
 
-// Make user available in req for APIs
+// ====== Make user available in req ======
 app.use((req, res, next) => {
     req.currentUser = req.session.user || null;
     next();
@@ -63,9 +77,9 @@ app.get('/expenses/history', ensureAuth, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'history.html'));
 });
 
-// Fallback
+// ====== Fallback ======
 app.get('/', (req, res) => res.redirect('/login'));
 
 // ====== Start Server ======
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5002;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
