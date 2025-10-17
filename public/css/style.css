@@ -1,0 +1,60 @@
+/* --- Auth Pages (Login / Register) --- */
+.auth-bg {
+  background-color: #4d7a99; /* similar blue to your reference image */
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-card {
+  background: #ffffff;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  width: 350px;
+  text-align: center;
+}
+
+.auth-card h3 {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+/* Keep existing input layout, just modernize */
+.auth-card input.form-control {
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  padding: 10px;
+}
+
+/* Login/Register button look */
+.auth-card .btn-primary {
+  background-color: #3478c1;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.auth-card .btn-primary:hover {
+  background-color: #28679f;
+}
+
+/* Text below (links, hints) */
+.auth-card .text-center a {
+  color: #3478c1;
+  text-decoration: none;
+}
+
+.auth-card .text-center a:hover {
+  text-decoration: underline;
+}
+.auth-card .text-muted {
+  color: #777;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
